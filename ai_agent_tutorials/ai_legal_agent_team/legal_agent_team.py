@@ -129,15 +129,15 @@ def main():
                         st.session_state.knowledge_base = knowledge_base
                         
                         # Initialize agents
-                        legal_researcher = Agent(
-                            name="Legal Researcher",
-                            role="Legal research specialist",
+                        va_claims_researcher = Agent(
+                            name="VA Claims Researcher",
+                            role="VA claims research specialist",
                             model=OpenAIChat(model="gpt-4o"),
-                            tools=[DuckDuckGo()],
+                            tools=[DuckDuckGo(), VAClaimsSearchTool()],
                             knowledge=st.session_state.knowledge_base,
                             search_knowledge=True,
                             instructions=[
-                                "Find and cite relevant legal cases and precedents",
+                                "Find and cite relevant VA claims cases and precedents",
                                 "Provide detailed research summaries with sources",
                                 "Reference specific sections from the uploaded document",
                                 "Always search the knowledge base for relevant information"
@@ -146,29 +146,31 @@ def main():
                             markdown=True
                         )
 
-                        contract_analyst = Agent(
-                            name="Contract Analyst",
-                            role="Contract analysis specialist",
+                        va_claims_analyst = Agent(
+                            name="VA Claims Analyst",
+                            role="VA claims analysis specialist",
                             model=OpenAIChat(model="gpt-4o"),
+                            tools=[VAClaimsAnalysisTool()],
                             knowledge=knowledge_base,
                             search_knowledge=True,
                             instructions=[
-                                "Review contracts thoroughly",
-                                "Identify key terms and potential issues",
+                                "Review VA claims documents thoroughly",
+                                "Identify key terms and potential issues specific to VA claims",
                                 "Reference specific clauses from the document"
                             ],
                             markdown=True
                         )
 
-                        legal_strategist = Agent(
-                            name="Legal Strategist", 
-                            role="Legal strategy specialist",
+                        va_claims_strategist = Agent(
+                            name="VA Claims Strategist", 
+                            role="VA claims strategy specialist",
                             model=OpenAIChat(model="gpt-4o"),
+                            tools=[VAClaimsStrategyTool()],
                             knowledge=knowledge_base,
                             search_knowledge=True,
                             instructions=[
-                                "Develop comprehensive legal strategies",
-                                "Provide actionable recommendations",
+                                "Develop comprehensive VA claims strategies",
+                                "Provide actionable recommendations for VA claims cases",
                                 "Consider both risks and opportunities"
                             ],
                             markdown=True
@@ -177,9 +179,9 @@ def main():
                         # Legal Agent Team
                         st.session_state.legal_team = Agent(
                             name="Legal Team Lead",
-                            role="Legal team coordinator",
+                            role="VA claims team coordinator",
                             model=OpenAIChat(model="gpt-4o"),
-                            team=[legal_researcher, contract_analyst, legal_strategist],
+                            team=[va_claims_researcher, va_claims_analyst, va_claims_strategist],
                             knowledge=st.session_state.knowledge_base,
                             search_knowledge=True,
                             instructions=[
@@ -234,27 +236,27 @@ def main():
         analysis_configs = {
             "Contract Review": {
                 "query": "Review this contract and identify key terms, obligations, and potential issues.",
-                "agents": ["Contract Analyst"],
+                "agents": ["VA Claims Analyst"],
                 "description": "Detailed contract analysis focusing on terms and obligations"
             },
             "Legal Research": {
-                "query": "Research relevant cases and precedents related to this document.",
-                "agents": ["Legal Researcher"],
-                "description": "Research on relevant legal cases and precedents"
+                "query": "Research relevant VA claims cases and precedents related to this document.",
+                "agents": ["VA Claims Researcher"],
+                "description": "Research on relevant VA claims cases and precedents"
             },
             "Risk Assessment": {
                 "query": "Analyze potential legal risks and liabilities in this document.",
-                "agents": ["Contract Analyst", "Legal Strategist"],
+                "agents": ["VA Claims Analyst", "VA Claims Strategist"],
                 "description": "Combined risk analysis and strategic assessment"
             },
             "Compliance Check": {
                 "query": "Check this document for regulatory compliance issues.",
-                "agents": ["Legal Researcher", "Contract Analyst", "Legal Strategist"],
+                "agents": ["VA Claims Researcher", "VA Claims Analyst", "VA Claims Strategist"],
                 "description": "Comprehensive compliance analysis"
             },
             "Custom Query": {
                 "query": None,
-                "agents": ["Legal Researcher", "Contract Analyst", "Legal Strategist"],
+                "agents": ["VA Claims Researcher", "VA Claims Analyst", "VA Claims Strategist"],
                 "description": "Custom analysis using all available agents"
             }
         }
